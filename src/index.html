@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apple Foundation Models Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <p class="eyebrow">Electron + Swift</p>
+        <h1>Apple Foundation Models Demo</h1>
+        <p class="lede">
+          Electron で UI を構築し、Foundation Models の呼び出しだけを Swift sidecar に分離した実験アプリ。
+        </p>
+
+        <section class="panel availability-panel">
+          <div class="panel-header">
+            <h2>Model Availability</h2>
+            <button id="checkAvailabilityButton" class="secondary">Refresh</button>
+          </div>
+          <dl id="availabilityList" class="key-value-list">
+            <div>
+              <dt>Status</dt>
+              <dd id="availabilityStatus">unknown</dd>
+            </div>
+            <div>
+              <dt>Reason</dt>
+              <dd id="availabilityReason">not checked yet</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="panel status-panel">
+          <div class="panel-header">
+            <h2>Bridge Status</h2>
+          </div>
+          <pre id="statusLog" class="status-log"></pre>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="panel composer-panel">
+          <div class="panel-header">
+            <h2>Prompt</h2>
+          </div>
+          <form id="promptForm">
+            <label class="field">
+              <span>System Prompt</span>
+              <textarea id="systemPrompt" rows="4">You are a concise assistant running inside an Electron prototype.</textarea>
+            </label>
+            <label class="field">
+              <span>User Prompt</span>
+              <textarea id="userPrompt" rows="8" placeholder="Foundation Models に送りたい内容を入力"></textarea>
+            </label>
+            <div class="actions">
+              <button id="generateButton" type="submit">Generate</button>
+              <button id="cancelButton" type="button" class="secondary">Cancel</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel output-panel">
+          <div class="panel-header">
+            <h2>Response</h2>
+          </div>
+          <pre id="responseOutput" class="response-output"></pre>
+        </section>
+      </main>
+    </div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>
