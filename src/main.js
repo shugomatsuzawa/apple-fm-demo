@@ -20,6 +20,11 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
+  // デバッグ用
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools({ mode: 'bottom' });
+  }
 }
 
 app.whenReady().then(async () => {

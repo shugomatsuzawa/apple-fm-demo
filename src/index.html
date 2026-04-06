@@ -4,70 +4,126 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Apple Foundation Models Demo</title>
+    <script>
+      // ダークモードのチェック
+      function isDarkMode() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+      if (isDarkMode()) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        if (event.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/basecoat.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/sidebar.min.js" defer></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="app-shell">
-      <aside class="sidebar">
-        <p class="eyebrow">Electron + Swift</p>
-        <h1>Apple Foundation Models Demo</h1>
-        <p class="lede">
-          Electron で UI を構築し、Foundation Models の呼び出しだけを Swift sidecar に分離した実験アプリ。
-        </p>
+      <header class="app-header">
+        <div>
+          <p class="app-kicker">Electron + Swift</p>
+          <h1>Apple Foundation Models Demo</h1>
+          <p class="app-summary">
+            Electron で UI を構築し、Foundation Models の呼び出しだけを Swift sidecar に分離した実験アプリ。
+          </p>
+        </div>
+      </header>
 
-        <section class="panel availability-panel">
-          <div class="panel-header">
-            <h2>Model Availability</h2>
-            <button id="checkAvailabilityButton" class="secondary">Refresh</button>
-          </div>
-          <dl id="availabilityList" class="key-value-list">
-            <div>
-              <dt>Status</dt>
-              <dd id="availabilityStatus">unknown</dd>
-            </div>
-            <div>
-              <dt>Reason</dt>
-              <dd id="availabilityReason">not checked yet</dd>
-            </div>
-          </dl>
-        </section>
+      <div class="layout-grid">
+        <aside class="side-area">
+          <section class="card app-card">
+            <header>
+              <div class="section-row">
+                <div>
+                  <h2>Model Availability</h2>
+                  <p>この Mac 上で Foundation Models が使えるか確認します。</p>
+                </div>
+                <button id="checkAvailabilityButton" type="button" class="btn btn-secondary">Refresh</button>
+              </div>
+            </header>
+            <section>
+              <dl class="status-grid">
+                <div>
+                  <dt>Status</dt>
+                  <dd><span id="availabilityStatus" class="badge badge-outline">unknown</span></dd>
+                </div>
+                <div>
+                  <dt>Reason</dt>
+                  <dd id="availabilityReason">not checked yet</dd>
+                </div>
+              </dl>
+            </section>
+          </section>
 
-        <section class="panel status-panel">
-          <div class="panel-header">
-            <h2>Bridge Status</h2>
-          </div>
-          <pre id="statusLog" class="status-log"></pre>
-        </section>
-      </aside>
+          <section class="card app-card">
+            <header>
+              <h2>Bridge Status</h2>
+              <p>Electron と Swift sidecar の接続ログです。</p>
+            </header>
+            <section>
+              <pre id="statusLog" class="log-surface"></pre>
+            </section>
+          </section>
+        </aside>
 
-      <main class="workspace">
-        <section class="panel composer-panel">
-          <div class="panel-header">
-            <h2>Prompt</h2>
-          </div>
-          <form id="promptForm">
-            <label class="field">
-              <span>System Prompt</span>
-              <textarea id="systemPrompt" rows="4">You are a concise assistant running inside an Electron prototype.</textarea>
-            </label>
-            <label class="field">
-              <span>User Prompt</span>
-              <textarea id="userPrompt" rows="8" placeholder="Foundation Models に送りたい内容を入力"></textarea>
-            </label>
-            <div class="actions">
-              <button id="generateButton" type="submit">Generate</button>
-              <button id="cancelButton" type="button" class="secondary">Cancel</button>
-            </div>
-          </form>
-        </section>
+        <main class="workspace">
+          <section class="card app-card">
+            <header>
+              <h2>Prompt</h2>
+              <p>System Prompt と User Prompt を Swift sidecar に渡します。</p>
+            </header>
+            <section>
+              <form id="promptForm" class="prompt-form">
+                <label class="field-block" for="systemPrompt">
+                  <span>System Prompt</span>
+                  <textarea
+                    id="systemPrompt"
+                    class="textarea"
+                    rows="4"
+                  >You are a concise assistant running inside an Electron prototype.</textarea>
+                </label>
 
-        <section class="panel output-panel">
-          <div class="panel-header">
-            <h2>Response</h2>
-          </div>
-          <pre id="responseOutput" class="response-output"></pre>
-        </section>
-      </main>
+                <label class="field-block" for="userPrompt">
+                  <span>User Prompt</span>
+                  <textarea
+                    id="userPrompt"
+                    class="textarea prompt-input"
+                    rows="10"
+                    placeholder="Foundation Models に送りたい内容を入力"
+                  ></textarea>
+                </label>
+
+                <div class="action-row">
+                  <button id="generateButton" type="submit" class="btn">Generate</button>
+                  <button id="cancelButton" type="button" class="btn btn-secondary">Cancel</button>
+                </div>
+              </form>
+            </section>
+          </section>
+
+          <section class="card app-card response-card">
+            <header>
+              <h2>Response</h2>
+              <p>ストリーミングされた応答をそのまま表示します。</p>
+            </header>
+            <section>
+              <pre id="responseOutput" class="log-surface response-surface"></pre>
+            </section>
+          </section>
+        </main>
+      </div>
     </div>
 
     <script src="./renderer.js"></script>

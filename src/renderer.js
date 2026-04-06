@@ -9,6 +9,22 @@ const generateButton = document.querySelector('#generateButton');
 const cancelButton = document.querySelector('#cancelButton');
 const checkAvailabilityButton = document.querySelector('#checkAvailabilityButton');
 
+function updateAvailabilityBadge(status) {
+  availabilityStatus.className = 'badge badge-outline';
+
+  if (status === 'available') {
+    availabilityStatus.classList.add('is-success');
+    return;
+  }
+
+  if (status === 'error') {
+    availabilityStatus.classList.add('is-error');
+    return;
+  }
+
+  availabilityStatus.classList.add('is-warn');
+}
+
 function appendStatus(entry) {
   const timestamp = new Date().toLocaleTimeString();
   statusLog.textContent = `[${timestamp}] ${entry}\n${statusLog.textContent}`.trim();
@@ -24,10 +40,12 @@ async function refreshAvailability() {
   try {
     const result = await window.foundationModels.checkAvailability();
     availabilityStatus.textContent = result.status;
+    updateAvailabilityBadge(result.status);
     availabilityReason.textContent = result.reason || 'available';
     appendStatus(`Availability: ${result.status}${result.reason ? ` (${result.reason})` : ''}`);
   } catch (error) {
     availabilityStatus.textContent = 'error';
+    updateAvailabilityBadge('error');
     availabilityReason.textContent = error.message;
     appendStatus(`Availability check failed: ${error.message}`);
   }
